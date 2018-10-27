@@ -1,0 +1,70 @@
+Overall Flow
+~~~~~~~~~~~~
+
+Client instantiates itself
+Client connects to broker, gets messages, converts them from JSON to objects,
+    which are added to state.messages
+Certain actions generate status messages, such as connecting to broker, joining a channel, disconnecting.
+
+
+Main window
+~~~~~~~~~~~
+  * Class - Contains state
+
+  * Contains methods that manage state
+    * onChange
+      * Gets event.target.value and stores it in state.text
+    * onSubmit
+      * Prevent default
+      * Verifies that state.text isn't zero length
+      * If verification passes, generates and publishes a JSON
+        representation of a SingleMessage
+
+  * Contains mqtt client implementation
+    * Right now, the client is a serious of methods attached to MainWindow.  I think I should switch it
+      to be a separate class that gains access the the setState, instance variables, etc, by having
+      MainWindow passed as a argument to the client generation function.
+
+    * Methods used:
+        * onConnect
+          * Adds status message to this.state.messages
+        * onSubscribe
+          * Adds status message to this.state.messages
+        * onMessage
+          * Converts Buffer object to string, then to JSON, handling errors
+          * Converts JSON object to SingleMessage, appends to this.state.messages,
+            which re-renders the messageWindow list of messages
+
+  * Contains render method.
+    * Render flow control:
+      * Messages is an array of objects, each representing a message, meaning they have:
+        * Username
+        * Timestamp
+        * Payload
+        * messageID
+      props
+      The render maps across the array of messages, and in that map call, individual status messages
+      are detected and rendered as StatusMessages, rather than SingleMessages
+
+Single message
+~~~~~~~~~~~~~~
+  * SFC
+  * Used by main window
+  * Does no validation
+  * Deconstructs props into instance variables:
+      * Username
+      * Timestamp
+        * is a float, rendered into a string representation
+      * Payload
+      * messageID
+
+
+
+Chat Input
+~~~~~~~~~~
+  * SFC
+  * Takes input,
+  * Uses MainWindow.onChange and MainWindow.onSubmit, passed as props
+  * Does no validation, that's handled by MainWindow.onSubmit
+
+
