@@ -7,4 +7,3 @@ it('renders without crashing', () => {
   ReactDOM.render(<Input onChange={undefined} onSubmit={undefined}/>, div);
   ReactDOM.unmountComponentAtNode(div);
 });
-

@@ -1,11 +1,11 @@
 import mqtt from 'mqtt';
 
-const client = mqtt.connect({host: 'localhost', port: 1883, protocol: 'mqtt'});
+const client = mqtt.connect({host: 'localhost', port: 1883, protocol: 'mqtt', qos: 2});
 
 client.msgCount = 0;
 
 client.on('connect', ()=> {
-  client.subscribe('chat_test', (err) => {
+  client.subscribe('chat_test', {qos: 2}, (err) => {
     if (!err) {
       // client.publish('chat_test', 'Hello mqtt!');
       console.log('Subscribed!')

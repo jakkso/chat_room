@@ -1,14 +1,25 @@
-import DateTime from 'luxon';
 import React from 'react';
 
+import DateTime from 'luxon/src/datetime';
 
-function Message(props) {
-  function createTimestamp() {
-    const ts = DateTime.fromMillis(timestamp);
-    return ts.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+
+function createTimestamp(timestamp) {
+  const ts = DateTime.fromMillis(timestamp);
+  return ts.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
+}
+
+export function Message(props) {
+  const {message} = props;
+  const {username, timestamp, messageID, payload, statusMessage} = message;
+  const str_timestamp = createTimestamp(timestamp);
+  if (statusMessage) {
+    return (
+      <div className="message" id={messageID}>
+        <span>{str_timestamp}</span>
+        <span>{payload}</span>
+      </div>
+    )
   }
-  const {username, timestamp, messageID, payload} = props;
-  const str_timestamp = createTimestamp();
   return (
     <div className="message" id={messageID}>
       <span className="username">{username}</span>
@@ -18,4 +29,4 @@ function Message(props) {
   )
 }
 
-export default Message;
+// export default Message;

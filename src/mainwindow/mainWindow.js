@@ -1,6 +1,7 @@
 // import DateTime from "luxon";
 import mqtt from 'mqtt';
 import React from 'react';
+import {ChatWindow} from "../chatWindow/chatWindow";
 
 
 class MainWindow extends React.Component {
@@ -31,26 +32,26 @@ class MainWindow extends React.Component {
   }
 
   /**
-   *
+   * mqtt client configuration
    */
   generateClient() {
-    const client = mqtt.connect({host:this.host, port: this.port, protocol: 'mqtt'});
+    const client = mqtt.connect({host:this.host, port: this.port, protocol: 'mqtt', qos: 2});
 
     // Client connection method
     client.on('connect', (err)=> {
       if (err) {
         console.error(err.valueOf());
         this.statusMessage(err.valueOf(), 'error', false);
+      } else if (!err) {
+        client.subscribe(this.channel, {qos: 2}, (err) => {
+          if (err) return console.error(err.valueOf());
+          this.statusMessage(`${this.username} joined the channel`, 'join', true);
+        });
       }
     });
 
-    client.subscribe(this.channel, (err) => {
-      if (err) {
-        console.error(err.valueOf());
-        return;
-      }
-      this.statusMessage('Joined the channel', 'join', true);
-    });
+    // Subscription method.
+
 
 
     // Client message method
@@ -60,24 +61,24 @@ class MainWindow extends React.Component {
         const message = JSON.parse(strMsg);
         this.setState((prevState) => ({
           messages: prevState.messages.concat([message]),
-          text: '',
         }))
       }
       catch (err) {
-        // alert('Bad JSON');
         console.error(err.valueOf())
       }
-    })
+    });
+
+    return client;
   }
 
 
   /**
-   * Store chatbox text in state for use when submitted.
+   * Store chat box text in state for use when submitted.
    * @param event
    */
   onChange(event) {
     const text = event.target.value.replace('"', '\\"');
-    this.setState({text})
+    this.setState({text});
   }
 
   /**
@@ -89,13 +90,15 @@ class MainWindow extends React.Component {
     const text = this.state.text;
     const username = this.username;
     if (text.length === 0) return;
+    const timestamp = Math.round((new Date()).getTime());
     const message = {
       username: username,
-      timestamp: Math.round((new Date()).getTime()),  // unix timestamp
-      messageID: "blah",  // TODO write id generation function.
+      timestamp: timestamp,  // unix timestamp
+      messageID: `${timestamp}-${username}`,
       payload: text,
     };
-    this.client.publish(this.channel, JSON.stringify(message));
+    this.client.publish(this.channel, {qos: 2}, JSON.stringify(message));
+    this.setState({text: ''});
   };
 
   /**
@@ -113,15 +116,23 @@ class MainWindow extends React.Component {
     message.payload = text;
     message.username = this.username;
     message.type = type;
+    message.timestamp = Math.round((new Date()).getTime());
     if (!broadcast) {
       this.setState((prevState) => ({
         messages: prevState.messages.concat([message]),
-        text: '',
       }));
     } else {
-      this.client.publish(this.channel, JSON.stringify(message));
+      this.client.publish(this.channel, {qos: 2}, JSON.stringify(message));
     }
+  }
 
+  render() {
+    const messages = this.state.messages;
+    return (
+      <div  id="main-window">
+        <ChatWindow messages={messages} onChange={this.onChange} onSubmit={this.onSubmit}/>
+      </div>
+    )
   }
 }
 
