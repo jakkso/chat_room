@@ -68,3 +68,40 @@ Chat Input
   * Does no validation, that's handled by MainWindow.onSubmit
 
 
+Get Credentials
+~~~~~~~~~~~~~~~
+
+  * SFC
+  * Takes input to get username, password, hostname and port
+  * takes onChange and onSubmit methods from MainWindow (Which draws it) to supply user-input credentials into
+    state.username, state.password, state.hostname, state.port as well as state.credentials_input: bool
+
+
+Problems
+~~~~~~~~
+* Constant Socket errors, according to https://stackoverflow.com/questions/45780046/why-reactjs-mqtt-client-url-return-wss
+  this is because in a browser, it's in a sandbox, therefore it's converting it to websocket secure mode.  This means that
+  my broker must support secure websockets if I want to use it with reactjs.
+
+  In order to do this properly, I'm going to have to have a cert issued by a CA, like let's encrypt.
+  This means I'm going to have to have a domain, that I have full control over.
+  As of right now I cannot confirm that certbot worked correctly, there was an error message that port 80 wasn't bound correctly.
+  Going home to try to fix it via GUI interface
+
+  Alright, turns out that apache was listening on 80, turned it off, ran certbot and the certs are working properly.
+
+  Followed https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-the-mosquitto-mqtt-messaging-broker-on-ubuntu-16-04
+
+  Configured mosquitto to require authentication, setup SSL certs, confirmed that it's working via the eclipse
+   JS client
+
+   Now that the certs are properly setup, in order to test that my JS client is working, First, I'm going to have to read
+   mqtt.js' documentation to figure out how to connect to it via ssl
+
+
+
+
+
+
+
+

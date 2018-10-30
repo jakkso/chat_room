@@ -1,5 +1,5 @@
 // import DateTime from "luxon";
-import mqtt from 'mqtt';
+// import mqtt from 'mqtt';
 import React from 'react';
 import {ChatWindow} from "../chatWindow/chatWindow";
 
@@ -28,7 +28,7 @@ class MainWindow extends React.Component {
     this.channel = channel;
 
     // MQTT Client construction
-    this.client = this.generateClient();
+
   }
 
   /**
@@ -38,16 +38,25 @@ class MainWindow extends React.Component {
     const client = mqtt.connect({host:this.host, port: this.port, protocol: 'mqtt', qos: 2});
 
     // Client connection method
-    client.on('connect', (err)=> {
-      if (err) {
-        console.error(err.valueOf());
-        this.statusMessage(err.valueOf(), 'error', false);
-      } else if (!err) {
-        client.subscribe(this.channel, {qos: 2}, (err) => {
-          if (err) return console.error(err.valueOf());
-          this.statusMessage(`${this.username} joined the channel`, 'join', true);
-        });
-      }
+    client.on('connect', ()=> {
+      client.subscribe(this.channel, {qos: 2}, (err) => {
+        if (!err) {
+          console.log('Subscribed');
+        }
+        else {
+          console.error("Subscription error");
+          console.error(err.valueOf());
+        }
+      })
+      // if (err) {
+      //   console.error(err.valueOf());
+      //   this.statusMessage(err.valueOf(), 'error', false);
+      // } else if (!err) {
+      //   client.subscribe(this.channel, {qos: 2}, (err) => {
+      //     if (err) return console.error(err.valueOf());
+      //     this.statusMessage(`${this.username} joined the channel`, 'join', true);
+      //   });
+      // }
     });
 
     // Subscription method.
