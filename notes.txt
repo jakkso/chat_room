@@ -1,10 +1,61 @@
 Overall Flow
 ~~~~~~~~~~~~
 
+1. Login view
+  Gets:
+    Username
+    Password
+    Hostname
+  Gets credentials, attempts to connect to broker.
+  If connection is successful:
+    Add Status message to state (Not to broker)
+    Subscribe to channel
+    Publish $USER joined channel message to broker.
+    Change state.logged_in to true
+    Change state.password to empty string
+
+  Else:
+    Add connection failure message to state.messages
+    Determine type of failure:
+      Network Error:
+        Add network error message to state.messages
+        Try to reconnect for a specified amount of times
+          If greater than retries:
+            Stop trying to connect
+            Display re-try message
+
+      Credential failure:
+        Stop trying to connect
+        Clear all credentials from state
+        Add credential failure message to state.messages
+        Prompt for new credentials
+
+      Default failure:
+        Clear all credentials from state.
+        Stop trying to connect
+        Add unspecified error message to state.messages
+        console.error the error text.
+
+2. Logged in view
+  Box containing chat messages
+    Messages:
+      Basic format: `${username} - ${timestamp}: ${payload}`
+      If message.username === this.state.username:
+        Message is Self-styled
+      Else:
+        Message is Other-styled
+  Input box that enables user to publish messages to the broker
+  Disconnect button:
+    Publishes disconnect Message to broker
+    Disconnects
+
+
+
 Client instantiates itself
 Client connects to broker, gets messages, converts them from JSON to objects,
     which are added to state.messages
 Certain actions generate status messages, such as connecting to broker, joining a channel, disconnecting.
+
 
 
 Main window
@@ -53,8 +104,8 @@ Single message
   * Does no validation
   * Deconstructs props into instance variables:
       * Username
-      * Timestamp
-        * is a float, rendered into a string representation
+      * Timestamp:
+        float, rendered into a string representation
       * Payload
       * messageID
 
@@ -99,6 +150,12 @@ Problems
    mqtt.js' documentation to figure out how to connect to it via ssl
 
 
+
+Going to lunch right now.  Before I left I was working on:
+    Writing a chat window component:
+      Displays all messages in <Message> format
+
+    Conditional rendering of <Input> component if isConnected === true vs <Login> component if it === false
 
 
 

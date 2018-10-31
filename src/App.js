@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
 
-import {Get} from './chatInput/getCredentials';
-import {Message} from './chatWindow/singleMessage';
-import {Window} from './mainwindow/mqttClient';
+// import {LoginView} from './login/login';
+// import {Message} from './MsgWindow/singleMessage';
+// import {Window} from './mainwindow/mqttClient';
+import {Main} from "./main/main";
 
 
 class App extends Component {
@@ -47,12 +48,12 @@ class App extends Component {
 
   render() {
 
-    const msg = {
-      username:"John Smith",
-      timestamp: 1540605398000,
-      messageID:"12345",
-      payload:"Hello my name is john.",
-    };
+    // const msg = {
+    //   username:"John Smith",
+    //   timestamp: 1540605398000,
+    //   messageID:"12345",
+    //   payload:"Hello my name is john.",
+    // };
 
     // const status = {
     //   username: "Jack",
@@ -61,10 +62,10 @@ class App extends Component {
     //   statusMessage: true,
     // };
 
-    const username = "xander";
-    const host = 'jakk.zapto.org';
-    const port = 8083;
-    const channel = 'chat_test';
+    // const username = "xander";
+    // const host = 'jakk.zapto.org';
+    // const port = 8083;
+    // const channel = 'chat_test';
     // const state = this.state;
     return (
       <div className="App">
@@ -72,7 +73,8 @@ class App extends Component {
           {/*message={msg}*/}
         {/*/>*/}
         {/*<Get onChange={this.onChange} onSubmit={this.onSubmit} state={state}/>*/}
-        <Window username={username} host={host} port={port} channel={channel}/>
+        {/*<Window username={username} host={host} port={port} channel={channel}/>*/}
+        <Main />
       </div>
     );
   }

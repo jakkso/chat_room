@@ -1,7 +1,7 @@
 // import DateTime from "luxon";
 // import mqtt from 'mqtt';
 import React from 'react';
-import {ChatWindow} from "../chatWindow/chatWindow";
+import {MsgWindow} from "../messageWindow/msgWindow";
 
 
 class MainWindow extends React.Component {
@@ -139,7 +139,7 @@ class MainWindow extends React.Component {
     const messages = this.state.messages;
     return (
       <div  id="main-window">
-        <ChatWindow messages={messages} onChange={this.onChange} onSubmit={this.onSubmit}/>
+        <messageWindow messages={messages} onChange={this.onChange} onSubmit={this.onSubmit}/>
       </div>
     )
   }
