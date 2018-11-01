@@ -1,6 +1,7 @@
+import DateTime from 'luxon/src/datetime';
 import React from 'react';
 
-import DateTime from 'luxon/src/datetime';
+import './singleMessage.css';
 
 
 function createTimestamp(timestamp) {
@@ -9,24 +10,41 @@ function createTimestamp(timestamp) {
 }
 
 export function Message(props) {
-  const {message} = props;
+  const {message, lastUsername} = props;
   const {username, timestamp, messageID, payload, statusMessage} = message;
   const str_timestamp = createTimestamp(timestamp);
   if (statusMessage) {
     return (
-      <div className="message" id={messageID}>
-        <span>{str_timestamp}</span>
-        <span>{payload}</span>
+      <div className="message status-message" id={messageID}>
+        <div className="info-box">
+          <span className="timestamp">{str_timestamp}</span>
+        </div>
+        <span className="payload">{payload}</span>
+      </div>
+    )
+  }
+  if (lastUsername === username) {
+    return (
+      <div className="message same-user" id={messageID}>
+        <div className="info-box">
+          <span className="timestamp">{str_timestamp}</span>
+          <span className="username">{username}</span>
+        </div>
+        <div className="payload">
+          {payload}
+        </div>
       </div>
     )
   }
   return (
     <div className="message" id={messageID}>
-      <span className="username">{username}</span>
-      <span className="timestamp">{str_timestamp}</span>
-      <span className="messageText">{payload}</span>
+      <div className="info-box">
+        <span className="timestamp">{str_timestamp}</span>
+        <span className="username">{username}</span>
+      </div>
+      <div className="payload">
+        {payload}
+      </div>
     </div>
   )
 }
-
-// export default Message;

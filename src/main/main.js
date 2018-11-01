@@ -25,6 +25,7 @@ export class Main extends React.Component {
       channel: '',
       isConnected: false,
       text: '',
+      lastUsername: '',
       messages: [],
     };
     // Instance Variables
@@ -144,14 +145,15 @@ export class Main extends React.Component {
       };
       this.setState((prevState) => {
         return {
-          messages: prevState.messages.concat([msg])
+          messages: prevState.messages.concat([msg]),
         }
       });
     }
     else if (typeof payload === "object" && payload !== null) {
       this.setState((prevState) => {
         return {
-          messages: prevState.messages.concat([payload])
+          messages: prevState.messages.concat([payload]),
+          lastUsername: payload.username,
         }
       });
     }
@@ -205,7 +207,7 @@ export class Main extends React.Component {
     }
     return (
       <div>
-        <MsgWindow messages={state.messages} />
+        <MsgWindow messages={state.messages} lastUsername={state.lastUsername}/>
         {input}
       </div>
     );

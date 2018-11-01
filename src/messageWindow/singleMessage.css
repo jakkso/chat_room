@@ -1,0 +1,44 @@
+.message {
+  max-width: 1000px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+  overflow: auto;
+  margin-left: 50px;
+  margin-right: 50px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+}
+
+.same-user {
+  margin-top: 0;
+}
+.info-box {
+  margin-right: 5px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.timestamp {
+  size: 12px;
+}
+
+.payload {
+  margin-left: 5px;
+  color: white;
+  background-color: #007aff;
+  padding: 8px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+
+.status-message {
+  color: black;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}

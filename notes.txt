@@ -108,6 +108,27 @@ Single message
         float, rendered into a string representation
       * Payload
       * messageID
+  * Renderer
+    * Three types of messages:
+        * Current user:
+          * Right justified
+          * Doesn't include name
+          * Does include timestamp and payload
+        * Status Message:
+          * Center justified
+          * Text is smaller, less obtrusive
+        * Other users:
+          * Left justified
+          * Includes name, timestamp and payload
+          * Name and timestamp is located in a box that's off to the left, in a single column, with payload text in a
+            column that takes up the rest of the screen to the right.
+    * Messages have a decent amount of vertical margin that forms a visual break between individual messages.
+     * From iMessage and Allo, several messages from the same person are grouped together a bit more
+       * Get prevMessage and if its username is the same as currentMessage, use this to adjust the margin to be a bit less.
+       * Heavily rounded edges, not nearly as sharp as, say, MD's card.
+       * Lighter backgrounds, darker messages
+       * Message text is white on a darker background
+
 
 
 
