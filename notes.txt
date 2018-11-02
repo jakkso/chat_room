@@ -178,6 +178,12 @@ Going to lunch right now.  Before I left I was working on:
 
     Conditional rendering of <Input> component if isConnected === true vs <Login> component if it === false
 
+    The way I'm detecting previousUsername, when it changes, it changes the rendering of all messages, so it's
+    constantly mutating, meaning it'll never be what I want it to be.
+
+    New plan.  Get array index in the map func (Is this even possible?) if the index is greater than 0 (first message)
+    then use this to access the previous message's username and compare it to current
+
 
 
 
