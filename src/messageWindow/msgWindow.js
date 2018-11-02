@@ -1,5 +1,6 @@
 import React from 'react';
 
+import './msgWindow.css'
 import {Message} from './singleMessage';
 
 export function MsgWindow(props) {

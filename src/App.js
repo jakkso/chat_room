@@ -1,48 +1,11 @@
 import React, { Component } from 'react';
-import './App.css';
+// import './App.css';
 
 // import {Message} from './messageWindow/singleMessage';
 import {Main} from "./main/main";
 
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {username: '', password: '', hostname: '', port: '8083'};
-    this.onChange = this.onChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-  }
-
-  onChange(event) {
-    const value = event.target.value;
-    const elementID = event.target.id;
-    switch (elementID) {
-      case "username":
-        this.setState({username: value,});
-        break;
-      case "password":
-        this.setState({password: value,});
-        break;
-      case "hostname":
-        this.setState({hostname: value,});
-        break;
-      case "port":
-        this.setState({port: value,});
-        break;
-      default:
-        break;
-    }
-  }
-
-  onSubmit(event) {
-    event.preventDefault();
-    const {username, password, hostname, port} = this.state;
-    console.log(`Username: '${username}'`);
-    console.log(`Password length: ${password.length}`);
-    console.log(`Hostname: '${hostname}'`);
-    console.log(`Port: '${port}'`);
-    this.setState({username: '', password: '', hostname: '', port: ''});
-  }
 
   render() {
     //

@@ -1,0 +1,4 @@
+#message-window {
+  max-height: 500px;
+  overflow: scroll;
+}
