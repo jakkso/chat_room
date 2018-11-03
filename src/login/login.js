@@ -13,9 +13,6 @@ export function LoginView(props) {
   const {username, password, hostname, channel} = state;
   return(
     <div id="login-container">
-      <div className="title">
-        Welcome to chatRoom!
-      </div>
       <form id="login-form">
         <input type="text" placeholder="Username" onChange={onChange} value={username} id="username"/>
         <input type="password" placeholder="Password" onChange={onChange} value={password} id="password"/>

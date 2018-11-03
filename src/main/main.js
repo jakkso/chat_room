@@ -1,9 +1,10 @@
 import mqtt from 'mqtt';
 import React from 'react';
 
-import {MsgWindow} from '../messageWindow/msgWindow';
 import Input from "../chatInput/chatInput";
 import {LoginView} from "../login/login";
+import {MsgWindow} from '../messageWindow/msgWindow';
+import {TitleBar} from "../titleBar/titleBar";
 
 
 export class Main extends React.Component {
@@ -252,23 +253,26 @@ export class Main extends React.Component {
   render() {
     const state = this.state;
     let input;
+    let titleBar;
     if (state.isConnected) {
       input = <Input
         onChange={this.handleTextInput}
         onSubmit={this.handleTextSubmit}
         text={state.text}
         disconnect={this.logout}
-      />
+      />;
+      titleBar = <TitleBar text={this.state.channel}/>
     } else {
       input = <LoginView
         onChange={this.onCredChange}
         onSubmit={this.login}
         state={this.state}
-      />
-
+      />;
+      titleBar = <TitleBar text={"chatRoom"}/>
     }
     return (
       <div>
+        {titleBar}
         <MsgWindow messages={state.messages} lastUsername={state.lastUsername}/>
         {input}
       </div>
