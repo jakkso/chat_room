@@ -9,6 +9,13 @@ function createTimestamp(timestamp) {
   return ts.toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
 }
 
+/**
+ * Renders a single message.
+ * TODO Should be simplified
+ * @param props
+ * @return {*}
+ * @constructor
+ */
 export function Message(props) {
   const {message, lastUsername} = props;
   const {username, timestamp, messageID, payload, statusMessage} = message;

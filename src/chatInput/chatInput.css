@@ -1,0 +1,9 @@
+#input-box {
+  width: 98%;
+  margin-left: 1%;
+  margin-bottom: 10px;
+}
+
+#disconnect-btn {
+  float: right;
+}

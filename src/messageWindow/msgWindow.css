@@ -1,4 +1,4 @@
 #message-window {
-  max-height: 500px;
+  max-height: 75%;
   overflow: scroll;
 }

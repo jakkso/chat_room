@@ -15,6 +15,7 @@ export class Main extends React.Component {
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleTextSubmit = this.handleTextSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
+    this.disconnect = this.disconnect.bind(this);
 
     // State Construction
     this.state = {
@@ -24,8 +25,8 @@ export class Main extends React.Component {
       port: 8083, // Default wss port for mosquitto broker.
       channel: '',
       isConnected: false,
-      text: '',
-      lastUsername: '',
+      text: '', // input box's state stored here.
+      lastUsername: '', // Used to group messages in MsgWindow
       messages: [],
     };
     // Instance Variables
@@ -33,7 +34,7 @@ export class Main extends React.Component {
   }
 
   /**
-   * Stores credentials in state
+   * Stores credentials, hostname and channel in state
    * @param event
    */
   onCredChange(event) {
@@ -58,7 +59,8 @@ export class Main extends React.Component {
   }
 
   /**
-   * Upon clicking login, this is called, which causes the render
+   * Defines logic for handling mqtt messages.
+   * In all honesty, this needs to be stripped out of this class.
    * @param event
    */
   attemptLogin(event) {
@@ -90,7 +92,7 @@ export class Main extends React.Component {
         else {
           this.setState({isConnected: true});
           const joinMsg = {
-            username: this.state.username,
+            username: '',
             timestamp: timestamp(),
             payload: `${this.state.username} has joined the channel`,
             messageId: '',
@@ -128,10 +130,16 @@ export class Main extends React.Component {
   }
 
   /**
-   * Adds message object to state directly, without
-   * publishing it to the broker.  Used to populate the message box
-   * without sending any network traffic to the broker
-   * @param payload {String}
+   * Adds message object to state directly, without publishing it to the broker.
+   * Used to populate the message box without sending any network traffic to the
+   * broker (And thereby other clients)
+   *
+   * If payload is a string and isStatusMsg is set, msg obj is built then added to
+   * state.messages
+   *
+   * If the payload is an object and isStatusMsg isn't set, then the object is added
+   * to state.messages as is.
+   * @param payload {String || Object}
    * @param isStatusMsg {boolean}
    */
   addMsg(payload, isStatusMsg) {
@@ -146,10 +154,11 @@ export class Main extends React.Component {
       this.setState((prevState) => {
         return {
           messages: prevState.messages.concat([msg]),
+          lastUsername: msg.username,
         }
       });
     }
-    else if (typeof payload === "object" && payload !== null) {
+    else if (typeof payload === "object" && payload !== null && !isStatusMsg) {
       this.setState((prevState) => {
         return {
           messages: prevState.messages.concat([payload]),
@@ -159,17 +168,26 @@ export class Main extends React.Component {
     }
   }
 
+  /**
+   * Keeps track of text box's input, called when the text input box is used.
+   * @param event
+   */
   handleTextInput(event) {
     const text = event.target.value;
     this.setState({text});
   }
 
+  /**
+   * This is called when the text input box is submitted.  Validates text input
+   * builds then publishes text.
+   * @param event
+   */
   handleTextSubmit(event) {
     event.preventDefault();
     const text = this.state.text;
     this.setState({text: ''});
 
-    if (text.length === 0) return;
+    if (text.length === 0 || text.trim().length === 0) return;
 
     if (this.client) {
       const msg = {
@@ -183,10 +201,45 @@ export class Main extends React.Component {
     }
   }
 
+  /**
+   * Used to scroll to the bottom of the list of messages upon updating.
+   * This could be replaced by converting MsgWindow to a stateful component and
+   * using refs, but this is simpler and easier to understand.
+   */
+  componentDidUpdate() {
+    const endOfMsgs = document.getElementById('messages-end');
+    endOfMsgs.scrollIntoView({behavior: 'smooth'});
+  }
+
+  /**
+   * Disconnect the mqtt client when the component is unmounted.
+   */
   componentWillUnmount() {
     this.client.end();
   }
 
+  disconnect(event) {
+    event.preventDefault();
+    const leaveMsg = {
+      username: '',
+      timestamp: timestamp(),
+      payload: `${this.state.username} has left the channel`,
+      messageId: '',
+    };
+    this.client.publish(this.state.channel, JSON.stringify(leaveMsg));
+    this.client.end();
+    this.setState({isConnected: false,
+                    username: '',
+                    password: '',
+                    host: '',
+                    channel: '',
+                    text: '',
+                    lastUsername: '',
+                    messages: [],
+      })
+    ;
+    this.client = null;
+  }
 
   render() {
     const state = this.state;
@@ -196,6 +249,7 @@ export class Main extends React.Component {
         onChange={this.handleTextInput}
         onSubmit={this.handleTextSubmit}
         text={state.text}
+        disconnect={this.disconnect}
       />
     } else {
       input = <LoginView
@@ -215,6 +269,10 @@ export class Main extends React.Component {
 
 }
 
+/**
+ * Returns timestamp of current time when called
+ * @return {number}
+ */
 function timestamp() {
   return Math.round((new Date()).getTime())
 }

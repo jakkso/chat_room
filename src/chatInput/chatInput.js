@@ -1,28 +1,32 @@
 import React from 'react';
 
+import './chatInput.css'
+
 /**
  * SFC to render the chat input box
  * @param props
  */
 function Input(props) {
-  const {onChange, onSubmit, text} = props;
+  const {onChange, onSubmit, text, disconnect} = props;
   return (
-    <form onSubmit={onSubmit}>
-      <input
-        type="text"
-        onChange={onChange}
-        placeholder="Type yer message"
-        onSubmit={onSubmit}
-        value={text}
-      />
-      <input
-        type="submit"
-        value="Submit"
-        onSubmit={onSubmit}
-      />
-    </form>
+    <div>
+      <form onSubmit={onSubmit}>
+        <span>
+        </span>
+        <input
+          type="text"
+          onChange={onChange}
+          onSubmit={onSubmit}
+          value={text}
+          id="input-box"
+          placeholder="Write a message"
+        />
+      </form>
+      <div>
+        <button onClick={disconnect} id="disconnect-btn">Logout</button>
+      </div>
+    </div>
   )
-
 }
 
 

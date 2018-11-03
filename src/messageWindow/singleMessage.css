@@ -3,7 +3,7 @@
   padding-top: 3px;
   padding-bottom: 3px;
   overflow: auto;
-  margin-left: 50px;
+  margin-left: 10px;
   margin-right: 50px;
   margin-top: 20px;
   display: flex;
@@ -15,15 +15,20 @@
 }
 .info-box {
   margin-right: 5px;
-  min-width: 200px;
+  width: 110px;
+  min-width: 110px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: flex-end;
 }
 
+.info-box span {
+  display: block;
+}
+
 .timestamp {
-  size: 10px;
+  font-size: 10px;
 }
 
 .payload {
@@ -34,6 +39,7 @@
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
+  word-break: break-word;  /* Break long lines*/
 }
 
 .status-message {
