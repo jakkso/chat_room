@@ -41,7 +41,7 @@ function ExitModal(props) {
           Cancel
         </button>
         <button
-        onClick={props.disconnect}
+        onClick={props.logout}
         >
           Exit
         </button>

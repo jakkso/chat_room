@@ -11,11 +11,11 @@ export class Main extends React.Component {
     super(props);
     // Bind instance methods
     this.onCredChange = this.onCredChange.bind(this);
-    this.attemptLogin = this.attemptLogin.bind(this);
+    this.login = this.login.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleTextSubmit = this.handleTextSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
-    this.disconnect = this.disconnect.bind(this);
+    this.logout = this.logout.bind(this);
 
     // State Construction
     this.state = {
@@ -63,7 +63,7 @@ export class Main extends React.Component {
    * In all honesty, this needs to be stripped out of this class.
    * @param event
    */
-  attemptLogin(event) {
+  login(event) {
     event.preventDefault();
     const state = this.state;
     if (state.host.length === 0 || state.username.length === 0 || state.password.length === 0) {
@@ -76,7 +76,6 @@ export class Main extends React.Component {
       port: state.port,
       protocol: 'wss', // websocket secure
       qos: 2,
-      clientId: state.username,
       username: state.username,
       password: state.password,
       rejectUnauthorized: true};
@@ -113,6 +112,7 @@ export class Main extends React.Component {
     });
 
     this.client.on('error', (err) => {
+      console.log(err);
       const errMsg = err.message;
       switch (errMsg) {
         case "Connection refused: Not authorized":
@@ -125,8 +125,39 @@ export class Main extends React.Component {
           this.addMsg(errMsg, true);
           break;
       }
-    })
+    });
 
+    this.client.on('offline', ()=> {
+      this.client.end();
+    });
+
+  }
+
+  /**
+   * Disconnects from broker, clears state variables
+   * @param event
+   */
+  logout(event) {
+    event.preventDefault();
+    const leaveMsg = {
+      username: '',
+      timestamp: timestamp(),
+      payload: `${this.state.username} has left the channel`,
+      messageId: '',
+    };
+    this.client.publish(this.state.channel, JSON.stringify(leaveMsg));
+    this.client.end();
+    this.setState({isConnected: false,
+      username: '',
+      password: '',
+      host: '',
+      channel: '',
+      text: '',
+      lastUsername: '',
+      messages: [],
+    })
+    ;
+    this.client = null;
   }
 
   /**
@@ -218,29 +249,6 @@ export class Main extends React.Component {
     this.client.end();
   }
 
-  disconnect(event) {
-    event.preventDefault();
-    const leaveMsg = {
-      username: '',
-      timestamp: timestamp(),
-      payload: `${this.state.username} has left the channel`,
-      messageId: '',
-    };
-    this.client.publish(this.state.channel, JSON.stringify(leaveMsg));
-    this.client.end();
-    this.setState({isConnected: false,
-                    username: '',
-                    password: '',
-                    host: '',
-                    channel: '',
-                    text: '',
-                    lastUsername: '',
-                    messages: [],
-      })
-    ;
-    this.client = null;
-  }
-
   render() {
     const state = this.state;
     let input;
@@ -249,12 +257,12 @@ export class Main extends React.Component {
         onChange={this.handleTextInput}
         onSubmit={this.handleTextSubmit}
         text={state.text}
-        disconnect={this.disconnect}
+        disconnect={this.logout}
       />
     } else {
       input = <LoginView
         onChange={this.onCredChange}
-        onSubmit={this.attemptLogin}
+        onSubmit={this.login}
         state={this.state}
       />
 
