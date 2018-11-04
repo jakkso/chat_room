@@ -186,15 +186,15 @@ export class Main extends React.Component {
   }
 
   /**
-   * Adds message object to state directly, without publishing it to the broker.
-   * Used to populate the message box without sending any network traffic to the
-   * broker (And thereby other clients)
+   * Adds payload to state.messages based on its type and whether or not isStatusMsg
+   * is set.
    *
    * If payload is a string and isStatusMsg is set, msg obj is built then added to
    * state.messages
    *
    * If the payload is an object and isStatusMsg isn't set, then the object is added
    * to state.messages as is.
+
    * @param payload {String || Object}
    * @param isStatusMsg {boolean}
    */
