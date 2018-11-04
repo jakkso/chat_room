@@ -22,16 +22,8 @@
 
 }
 
-.spacer {
-
-}
-
 #button-container {
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-}
-
-#login-button {
-
 }

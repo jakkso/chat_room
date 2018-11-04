@@ -1,10 +1,10 @@
 import mqtt from 'mqtt';
 import React from 'react';
 
-import Input from "../chatInput/chatInput";
-import {LoginView} from "../login/login";
-import {MsgWindow} from '../messageWindow/msgWindow';
-import {TitleBar} from "../titleBar/titleBar";
+import Input from "./chatInput/chatInput";
+import {LoginView} from "./login/login";
+import {MsgWindow} from './messageWindow/msgWindow';
+import {Title} from "./title/title";
 
 
 export class Main extends React.Component {
@@ -12,18 +12,17 @@ export class Main extends React.Component {
     super(props);
     // Bind instance methods
     this.onCredChange = this.onCredChange.bind(this);
+    this.validateCredentials = this.validateCredentials.bind(this);
     this.login = this.login.bind(this);
+    this.logout = this.logout.bind(this);
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleTextSubmit = this.handleTextSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
-    this.logout = this.logout.bind(this);
 
     // State Construction
     this.state = {
       username: '',
       password: '',
-      host: '',
-      port: 8083, // Default wss port for mosquitto broker.
       channel: '',
       isConnected: false,
       text: '', // input box's state stored here.
@@ -32,10 +31,12 @@ export class Main extends React.Component {
     };
     // Instance Variables
     this.client = null;
+    this.hostname = 'jakk.zapto.org';
+    this.wssPort = 8083;
   }
 
   /**
-   * Stores credentials, hostname and channel in state
+   * Stores credentials and channel in state
    * @param event
    */
   onCredChange(event) {
@@ -48,9 +49,6 @@ export class Main extends React.Component {
       case "password":
         this.setState({password: value,});
         break;
-      case "hostname":
-        this.setState({host: value,});
-        break;
       case "channel":
         this.setState({channel: value,});
         break;
@@ -60,25 +58,49 @@ export class Main extends React.Component {
   }
 
   /**
+   * Does basic validation of username, password, and channel
+   */
+  validateCredentials() {
+    let returnValue = true;
+    let msgStr = '';
+    const {username, password, channel} = this.state;
+    if (username.length === 0) {
+      returnValue = false;
+      msgStr += 'Invalid username.  ';
+    }
+    if (password.length === 0) {
+      returnValue = false;
+      msgStr += 'Invalid Password.  '
+    }
+    if (channel.length === 0 ||
+      channel.includes(' ') ||
+      channel.includes('#') ||
+      channel.includes('$') ||
+      channel.startsWith('/')
+    ) {
+      returnValue = false;
+      msgStr += 'Invalid channel.'
+    }
+    if (msgStr) this.addMsg(msgStr, true);
+    return returnValue;
+  }
+
+  /**
    * Defines logic for handling mqtt messages.
    * In all honesty, this needs to be stripped out of this class.
    * @param event
    */
   login(event) {
     event.preventDefault();
-    const state = this.state;
-    if (state.host.length === 0 || state.username.length === 0 || state.password.length === 0) {
-      this.addMsg('Empty credentials or hostname', true);
-      return;
-    }
+    if (!this.validateCredentials()) return;
 
     const connOptions = {
-      host: state.host,
-      port: state.port,
+      host: this.hostname,
+      port: this.wssPort,
       protocol: 'wss', // websocket secure
       qos: 2,
-      username: state.username,
-      password: state.password,
+      username: this.state.username,
+      password: this.state.password,
       rejectUnauthorized: true};
     this.client = mqtt.connect(connOptions);
 
@@ -130,6 +152,7 @@ export class Main extends React.Component {
 
     this.client.on('offline', ()=> {
       this.client.end();
+      this.addMsg('Connection lost', true);
     });
 
   }
@@ -261,14 +284,14 @@ export class Main extends React.Component {
         text={state.text}
         disconnect={this.logout}
       />;
-      titleBar = <TitleBar text={this.state.channel}/>
+      titleBar = <Title text={this.state.channel}/>
     } else {
       input = <LoginView
         onChange={this.onCredChange}
         onSubmit={this.login}
         state={this.state}
       />;
-      titleBar = <TitleBar text={"chatRoom"}/>
+      titleBar = <Title text={"chatRoom"}/>
     }
     return (
       <div>

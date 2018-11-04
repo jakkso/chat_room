@@ -1,7 +1,7 @@
 import React from 'react';
 
 import './msgWindow.css'
-import {Message} from './singleMessage';
+import {Message} from './singleMsg';
 
 /**
  * Renders all messages

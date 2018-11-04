@@ -1,7 +1,7 @@
 import DateTime from 'luxon/src/datetime';
 import React from 'react';
 
-import './singleMessage.css';
+import './singleMsg.css';
 
 
 function createTimestamp(timestamp) {
