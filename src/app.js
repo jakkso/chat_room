@@ -74,9 +74,10 @@ export class Main extends React.Component {
     }
     if (channel.length === 0 ||
       channel.includes(' ') ||
-      channel.includes('#') ||
-      channel.includes('$') ||
-      channel.startsWith('/')
+      channel.includes('#') ||  // # is a wildcard to subscribe all topics (What I'm called channels)
+      channel.includes('$') ||  // $ is used by the broker for internal statistics
+      channel.startsWith('/')   // Starting a topic with a / means that you're actually creating a channel and a sub
+                                // channel, but the channel is a zero character.  Simpler is better.
     ) {
       returnValue = false;
       msgStr += 'Invalid channel.'
