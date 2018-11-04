@@ -9,8 +9,7 @@ import './login.css';
  * @constructor
  */
 export function LoginView(props) {
-  const {onChange, onSubmit, state } = props;
-  const {username, password, channel} = state;
+  const {onChange, onSubmit, username, password, channel } = props;
   return(
     <div id="login-container">
       <form id="login-form">

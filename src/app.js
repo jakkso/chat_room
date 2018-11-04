@@ -25,8 +25,8 @@ export class Main extends React.Component {
       password: '',
       channel: '',
       isConnected: false,
-      text: '', // input box's state stored here.
-      lastUsername: '', // Used to group messages in MsgWindow
+      text: '',           // input box's state stored here.
+      lastUsername: '',   // Used to group messages in MsgWindow
       messages: [],
     };
     // Instance Variables
@@ -70,17 +70,16 @@ export class Main extends React.Component {
     }
     if (password.length === 0) {
       returnValue = false;
-      msgStr += 'Invalid Password.  '
+      msgStr += 'Invalid Password.  ';
     }
     if (channel.length === 0 ||
       channel.includes(' ') ||
       channel.includes('#') ||  // # is a wildcard to subscribe all topics (What I'm called channels)
       channel.includes('$') ||  // $ is used by the broker for internal statistics
       channel.startsWith('/')   // Starting a topic with a / means that you're actually creating a channel and a sub
-                                // channel, but the channel is a zero character.  Simpler is better.
-    ) {
+      ) {                       // channel, but the channel is a zero character.  Simpler is better.
       returnValue = false;
-      msgStr += 'Invalid channel.'
+      msgStr += 'Invalid channel.';
     }
     if (msgStr) this.addMsg(msgStr, true);
     return returnValue;
@@ -93,6 +92,7 @@ export class Main extends React.Component {
    */
   login(event) {
     event.preventDefault();
+    const {username, password, channel} = this.state;
     if (!this.validateCredentials()) return;
 
     const connOptions = {
@@ -100,14 +100,14 @@ export class Main extends React.Component {
       port: this.wssPort,
       protocol: 'wss', // websocket secure
       qos: 2,
-      username: this.state.username,
-      password: this.state.password,
+      username: username,
+      password: password,
       rejectUnauthorized: true};
     this.client = mqtt.connect(connOptions);
 
     this.client.on('connect', () => {
       this.addMsg('Connected', true);
-      this.client.subscribe(this.state.channel, {qos: 2}, (err) => {
+      this.client.subscribe(channel, {qos: 2}, (err) => {
         if (err) {
           this.client.end();
           this.addMsg('Subscription error', true);
@@ -117,10 +117,10 @@ export class Main extends React.Component {
           const joinMsg = {
             username: '',
             timestamp: timestamp(),
-            payload: `${this.state.username} has joined the channel`,
+            payload: `${username} has joined the channel`,
             messageId: '',
           };
-          this.client.publish(this.state.channel, JSON.stringify(joinMsg));
+          this.client.publish(channel, JSON.stringify(joinMsg));
         }
       })
     });
@@ -163,19 +163,19 @@ export class Main extends React.Component {
    * @param event
    */
   logout(event) {
+    const {username, channel} = this.state;
     event.preventDefault();
     const leaveMsg = {
       username: '',
       timestamp: timestamp(),
-      payload: `${this.state.username} has left the channel`,
+      payload: `${username} has left the channel`,
       messageId: '',
     };
-    this.client.publish(this.state.channel, JSON.stringify(leaveMsg));
+    this.client.publish(channel, JSON.stringify(leaveMsg));
     this.client.end();
     this.setState({isConnected: false,
       username: '',
       password: '',
-      host: '',
       channel: '',
       text: '',
       lastUsername: '',
@@ -229,8 +229,7 @@ export class Main extends React.Component {
    * @param event
    */
   handleTextInput(event) {
-    const text = event.target.value;
-    this.setState({text});
+    this.setState({text: event.target.value});
   }
 
   /**
@@ -240,18 +239,16 @@ export class Main extends React.Component {
    */
   handleTextSubmit(event) {
     event.preventDefault();
-    const text = this.state.text;
+    const {text, channel, username} = this.state;
     this.setState({text: ''});
-
     if (text.length === 0 || text.trim().length === 0) return;
-
     if (this.client) {
       const msg = {
-        username: this.state.username,
+        username: username,
         timestamp: timestamp(),
         payload: text,
         messageId: ''};
-      this.client.publish(this.state.channel, JSON.stringify(msg));
+      this.client.publish(channel, JSON.stringify(msg));
     } else {
       this.addMsg('Not connected to server', true);
     }
@@ -275,29 +272,40 @@ export class Main extends React.Component {
   }
 
   render() {
-    const state = this.state;
+    const {username,
+           password,
+           messages,
+           lastUsername,
+           channel,
+           text,
+           isConnected} = this.state;
     let input;
-    let titleBar;
-    if (state.isConnected) {
+    let title;
+    if (isConnected) {
+      title = <Title text={channel}/>;
       input = <Input
         onChange={this.handleTextInput}
         onSubmit={this.handleTextSubmit}
-        text={state.text}
+        text={text}
         disconnect={this.logout}
       />;
-      titleBar = <Title text={this.state.channel}/>
     } else {
+      title = <Title text={"chatRoom"}/>;
       input = <LoginView
         onChange={this.onCredChange}
         onSubmit={this.login}
-        state={this.state}
+        username={username}
+        password={password}
+        channel={channel}
       />;
-      titleBar = <Title text={"chatRoom"}/>
     }
     return (
       <div>
-        {titleBar}
-        <MsgWindow messages={state.messages} lastUsername={state.lastUsername}/>
+        {title}
+        <MsgWindow
+          messages={messages}
+          lastUsername={lastUsername}
+        />
         {input}
       </div>
     );
