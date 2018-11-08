@@ -19,7 +19,6 @@ export class Main extends React.Component {
     this.handleTextSubmit = this.handleTextSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
 
-    // State Construction
     this.state = {
       username: '',
       password: '',
@@ -29,7 +28,6 @@ export class Main extends React.Component {
       lastUsername: '',   // Used to group messages in MsgWindow
       messages: [],
     };
-    // Instance Variables
     this.client = null;
     this.hostname = 'jakk.zapto.org';
     this.wssPort = 8083;
@@ -58,7 +56,9 @@ export class Main extends React.Component {
   }
 
   /**
-   * Does basic validation of username, password, and channel
+   * Does basic validation of username, password, and channel,
+   * return {bool} true if credentials checkout, false otherwise.
+   *   If credentials aren't valid, the reason they're invalid is added to state.messages
    */
   validateCredentials() {
     let returnValue = true;
@@ -99,14 +99,13 @@ export class Main extends React.Component {
       host: this.hostname,
       port: this.wssPort,
       protocol: 'wss', // websocket secure
-      qos: 2,
+      qos: 2,  // Messages are sent exactly once.
       username: username,
       password: password,
       rejectUnauthorized: true};
     this.client = mqtt.connect(connOptions);
 
     this.client.on('connect', () => {
-      this.addMsg('Connected', true);
       this.client.subscribe(channel, {qos: 2}, (err) => {
         if (err) {
           this.client.end();

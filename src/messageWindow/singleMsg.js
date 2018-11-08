@@ -35,7 +35,7 @@ export function Message(props) {
       <div className="message same-user" id={messageID}>
         <div className="info-box">
           <span className="timestamp">{str_timestamp}</span>
-          <span className="username">{username}</span>
+          {/*<span className="username">{username}</span>*/}
         </div>
         <div className="payload">
           {payload}
@@ -46,8 +46,8 @@ export function Message(props) {
   return (
     <div className="message" id={messageID}>
       <div className="info-box">
-        <span className="timestamp">{str_timestamp}</span>
         <span className="username">{username}</span>
+        <span className="timestamp">{str_timestamp}</span>
       </div>
       <div className="payload">
         {payload}
