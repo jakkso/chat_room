@@ -149,31 +149,15 @@ Get Credentials
     state.username, state.password, state.hostname, state.port as well as state.credentials_input: bool
 
 
-Problems
-~~~~~~~~
-* Constant Socket errors, according to https://stackoverflow.com/questions/45780046/why-reactjs-mqtt-client-url-return-wss
-  this is because in a browser, it's in a sandbox, therefore it's converting it to websocket secure mode.  This means that
-  my broker must support secure websockets if I want to use it with reactjs.
+TODO List
+~~~~
+Front-end:
+    * Responsive Design to scale window to match screen sizes
+        * https://medium.com/@kkomaz/react-responsive-its-pretty-cool-d61e5ed56d95
+        * https://github.com/contra/react-responsive
+    * Write registration page
 
-  In order to do this properly, I'm going to have to have a cert issued by a CA, like let's encrypt.
-  This means I'm going to have to have a domain, that I have full control over.
-  As of right now I cannot confirm that certbot worked correctly, there was an error message that port 80 wasn't bound correctly.
-  Going home to try to fix it via GUI interface
-
-  Alright, turns out that apache was listening on 80, turned it off, ran certbot and the certs are working properly.
-
-  Followed https://www.digitalocean.com/community/tutorials/how-to-install-and-secure-the-mosquitto-mqtt-messaging-broker-on-ubuntu-16-04
-
-  Configured mosquitto to require authentication, setup SSL certs, confirmed that it's working via the eclipse
-   JS client
-
-   Now that the certs are properly setup, in order to test that my JS client is working, First, I'm going to have to read
-   mqtt.js' documentation to figure out how to connect to it via ssl
-
-
-
-Going to lunch right now.  Before I left I was working on:
-    Writing a chat window component:
-      Displays all messages in <Message> format
-
-    Conditional rendering of <Input> component if isConnected === true vs <Login> component if it === false
+Backend:
+    * Registration
+        * Integrate mosquitto auth plugin with sqlite plugin
+        * Write API to add users to database
