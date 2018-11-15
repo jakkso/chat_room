@@ -20,7 +20,7 @@ export async function API() {
     const password = req.body.password;
     if (!username || !password) {
       return res.status(400).send({
-        success: 'false',
+        success: false,
         message: 'username and password are required',
       });
     }
@@ -36,7 +36,7 @@ export async function API() {
 
         default:
           return res.status(500).send({
-            success: 'false',
+            success: false,
             message: '500 internal server error',
           });
       }
@@ -53,16 +53,18 @@ export async function API() {
     const newPw = req.body.newPw;
 
     if (!username || !oldPw || !newPw) return res.status(400).send({
-      success: 'false',
+      success: false,
       message: 'username, oldPw and newPw are required',
     });
 
-    const result = await this.db.changePassword(username, oldPw, newPw);
+    const result = await db.changePassword(username, oldPw, newPw);
     if (!result.success) {
       return res.status(400).send(result);
     }
     return res.status(200).send(result);
   })
 
-
+  return app.listen(PORT, () => {
+    console.log(`Listening on port ${PORT}.`)
+  })
 }

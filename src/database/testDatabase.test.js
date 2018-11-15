@@ -1,5 +1,5 @@
 import {Database, hashPassword} from './database';
-import {runTest} from '../test/testRunner';
+import {runTest} from '../tests/testRunner';
 
 async function TestDatabase() {
   const hash = '465426e4f39be33ca772796494ceb605727d7fa97e37eaf16874c61407d6169e';
@@ -16,9 +16,9 @@ async function TestDatabase() {
   runTest('Password hashes match', result.password === hash);
 
   result = await db.addUser('alex', 'hunter2');
-  runTest('Duplicate addition failure', result.success === false);
+  runTest('Duplicate addition noCreds', result.success === false);
 
-  // this test depends on salt being 'hello_i_am_a_salt'
+  // this tests depends on salt being 'hello_i_am_a_salt'
   result = hashPassword('hello!');
   runTest('Hash function returns correct result', result.success === true && result.hash === hash);
 
