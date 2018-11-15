@@ -2,10 +2,10 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import {Database} from "../database/database";
-import {getEnv} from "../../scratch";
+import env from '../../env'
 
 export async function API() {
-  const PORT = getEnv().apiPort;
+  const PORT = env.apiPort; // TODO add error handling to accessing env.json.
   const db = new Database();
 
   const app = express();

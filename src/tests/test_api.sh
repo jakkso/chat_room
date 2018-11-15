@@ -2,12 +2,13 @@
 # Integration Test for API
 
 url='localhost:5001/api/v1/users/'
-# username is a constantly changing name, for test repeatability
+# username is a constantly changing name, for test repeatability without having
+# to restart the api and clear out the database.
 username=(`printf '%(%s)T\n' -1`)
 
 clear
 echo "Testing database"
-../../node_modules/.bin/babel-node ../database/testDatabase.test.js
+../../node_modules/.bin/babel-node ./database.test.js
 echo ""
 echo "Testing the API"
 echo ""

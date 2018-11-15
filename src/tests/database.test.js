@@ -1,4 +1,4 @@
-import {Database, hashPassword} from './database';
+import {Database, hashPassword} from './../database/database';
 import {runTest} from '../tests/testRunner';
 
 async function TestDatabase() {
@@ -33,11 +33,13 @@ async function TestDatabase() {
   result = await db.changePassword('not alex', 'wrong_pw', 'something');
   runTest('Change password using wrong password fails', result.success === false);
 
+  result = await db.changePassword('not_a_user', '', '');
+  runTest('Changing password of absent user returns failure', result.success === false);
+
   result = await db.changePassword('not alex', 'hello!', 'new_password');
   runTest('Change password returns success', result.success === true);
   result = await db.getPassword('not alex');
   runTest('Confirm password changed', result.password === newHash);
-
 }
 
 TestDatabase();

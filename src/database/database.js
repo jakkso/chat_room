@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import {getEnv} from "../../scratch";
+import env from '../../env'
 import sqlite from 'sqlite';
 
 
 export class Database {
   constructor() {
-    this.file = getEnv().dbFile;
+    this.file = env.dbFile;
   }
 
   /**
@@ -98,7 +98,7 @@ export class Database {
  * @return {{success: boolean, hash: String}}
  */
 export function hashPassword(password) {
-  const salt = getEnv().salt;
+  const salt = env.salt;
     if (salt === undefined) {
       return {success: false, hash: undefined};
     }

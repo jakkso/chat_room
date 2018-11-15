@@ -2,9 +2,9 @@ import mqtt from 'mqtt';
 import React from 'react';
 
 import Input from "./chatInput/chatInput";
-import {LoginView} from "./login/login";
-import {MsgWindow} from './messageWindow/msgWindow';
-import {Title} from "./title/title";
+import {LoginView} from "./react-components/login/login";
+import {MsgWindow} from './react-components/messageWindow/msgWindow';
+import {Title} from "./react-components/title/title";
 
 
 export class Main extends React.Component {
