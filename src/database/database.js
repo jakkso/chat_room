@@ -80,7 +80,7 @@ export class Database {
     const oldPwHash = hashPassword(oldPassword).hash;
     const newPwHash = hashPassword(newPassword).hash;
     const pw = await this.getPassword(username);
-    if (pw.password !== oldPwHash) {
+    if (!pw || pw.password !== oldPwHash) {
       result.success = false;
       result.message = failureText;
       return result;

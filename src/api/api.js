@@ -62,7 +62,7 @@ export async function API() {
       return res.status(400).send(result);
     }
     return res.status(200).send(result);
-  })
+  });
 
   return app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}.`)

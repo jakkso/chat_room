@@ -26,4 +26,5 @@ curl $url -s -X PUT -H "Content-Type:application/json" -d '{"oldPw": "hello", "n
 curl $url -s -X PUT -H "Content-Type:application/json" -d '{"username": "'"$username"'", "newPw": "hello1"}' > json/failedPUTNoOldPw.json
 curl $url -s -X PUT -H "Content-Type:application/json" -d '{"username": "'"$username"'", "oldPw": "hello!"}' > json/failedPUTNoNewPw.json
 curl $url -s -X PUT -H "Content-Type:application/json" -d '{"username": "'"$username"'", "oldPw": "hello!", "newPw": "hello1"}' > json/successPUT.json
+curl $url -s -X PUT -H "Content-Type:application/json" -d '{"username": "fake-username", "oldPw": "hello!", "newPw": "hello1"}' > json/failedPUTBadUsername.json
 ../../node_modules/.bin/babel-node testPUT.js
