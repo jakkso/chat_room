@@ -149,6 +149,26 @@ Get Credentials
     state.username, state.password, state.hostname, state.port as well as state.credentials_input: bool
 
 
+Registration Submit Flow
+~~~~~~~~~~~~~~~~~~~~~~~~
+  * User hits submit button
+  * Validate credentials
+      * Requirements
+        * Is username blank or whitespace
+        * Do the passwords match
+        * Are the passwords at least 12 characters
+      * If requirements fail:
+        * Display error message text
+        * Do not send API fetch request
+      * If they pass, then send API request.
+  * After having sent API call:
+    * Check resp.success
+        * If true: display message, redirect to login page
+        * If false
+            * Display error message
+            *
+
+
 TODO List
 ~~~~
 Front-end:
@@ -161,3 +181,4 @@ Backend:
     * Registration
         * Integrate mosquitto auth plugin with sqlite plugin
         * Write API to add users to database
+            * This is mostly done.

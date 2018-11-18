@@ -2,7 +2,8 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import {Database} from "../database/database";
-import env from '../../env'
+import {validateCreds} from "../utilities/validate";
+import env from './../env.json';
 
 export async function API() {
   const PORT = env.apiPort; // TODO add error handling to accessing env.json.
@@ -13,27 +14,32 @@ export async function API() {
   app.use(bodyParser.urlencoded({extended: false}));
 
   /**
+   * Enable cors  TODO specify domains, if possible.
+   */
+  app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+  });
+
+
+  /**
    * Used to add users to database
    */
   app.post('/api/v1/users', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
-    if (!username || !password) {
-      return res.status(400).send({
-        success: false,
-        message: 'username and password are required',
-      });
+    const password2 = req.body.password2;
+    const isValid = validateCreds(username, password, password2);
+    if (!isValid.success) {
+      return res.status(400).send(isValid);
     }
     const result = await db.addUser(username, password);
     if (!result.success) {
+      // I'm leaving this as a switch statement in case I add additional failure messages.
       switch (result.message) {
-
         case 'unique name failure':
           return res.status(400).send(result);
-
-        case 'password error':
-          return res.status(500).send(result);
-
         default:
           return res.status(500).send({
             success: false,

@@ -3,6 +3,7 @@ import React from 'react';
 
 import Input from "./chatInput/chatInput";
 import {LoginView} from "./react-components/login/login";
+import {Registration} from "./react-components/registration/registrationView";
 import {MsgWindow} from './react-components/messageWindow/msgWindow';
 import {Title} from "./react-components/title/title";
 
@@ -290,13 +291,14 @@ export class Main extends React.Component {
       />;
     } else {
       title = <Title text={"chatRoom"}/>;
-      input = <LoginView
-        onChange={this.onCredChange}
-        onSubmit={this.login}
-        username={username}
-        password={password}
-        channel={channel}
-      />;
+      // input = <LoginView
+      //   onChange={this.onCredChange}
+      //   onSubmit={this.login}
+      //   username={username}
+      //   password={password}
+      //   channel={channel}
+      // />;
+      input = <Registration />
     }
     return (
       <div>

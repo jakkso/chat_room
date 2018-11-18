@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import env from '../../env'
+import env from '../env'
 import sqlite from 'sqlite';
 
 
@@ -21,7 +21,7 @@ export class Database {
   /**
    * @param username {String}
    * @param password {String}
-   * @return {Promise<void>}
+   * @return {Promise<{success: boolean, message: string}>}
    */
   async addUser(username, password) {
     if (!this.db) await this.init();
@@ -43,7 +43,7 @@ export class Database {
       }
     }
     result.success = true;
-    result.message = 'user added successfully';
+    result.message = 'registered successfully';
     return result;
   }
 
