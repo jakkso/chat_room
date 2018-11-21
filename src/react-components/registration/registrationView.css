@@ -47,9 +47,5 @@
 }
 
 .disabled {
-  color: grey;
-}
-
-.disabled:hover {
-  cursor: not-allowed;
+  display: none;
 }
