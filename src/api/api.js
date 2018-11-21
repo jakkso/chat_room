@@ -39,6 +39,7 @@ export async function API() {
       // I'm leaving this as a switch statement in case I add additional failure messages.
       switch (result.message) {
         case 'unique name failure':
+          result.message = 'choose a different name';
           return res.status(400).send(result);
         default:
           return res.status(500).send({
