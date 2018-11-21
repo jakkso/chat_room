@@ -166,10 +166,12 @@ Registration Submit Flow
         * If true: display message, redirect to login page
         * If false
             * Display error message
-            *
+    * Check error message, if fetch was refused, add error message to that extent
+        * If connection was refused, note that
+        * If network connection is down, note that
 
 
-TODO List
+TODO List long term
 ~~~~
 Front-end:
     * Responsive Design to scale window to match screen sizes
@@ -182,3 +184,16 @@ Backend:
         * Integrate mosquitto auth plugin with sqlite plugin
         * Write API to add users to database
             * This is mostly done.
+
+
+TODO List for right now
+  * Tie Registration view into app
+    * Create registration button that when clicked, page loads registration view instead of
+    the normal login page.
+    * When submitting fetch request to API, note the returned message
+      * If successful,
+        * Display success message
+        * Note that page is being redirected
+        * Reload login view after a few seconds
+      * If not successful
+        * Set errorMsg, render() takes care of displaying the error message

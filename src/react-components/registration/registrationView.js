@@ -16,6 +16,7 @@ export class Registration extends React.Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.submitButtonFocus = this.submitButtonFocus.bind(this);
   }
 
   handleChange(event) {
@@ -46,16 +47,40 @@ export class Registration extends React.Component {
       return;
     }
 
+    // Check that client is connected to internet
+    if (!navigator.onLine) {
+      this.setState({errMsg: 'Network connection error'});
+      return;
+    }
+
     const data = {username: username, password: pw1, password2: pw2};
-    const resp = await sendRequest('POST', env.apiURL, data);  // TODO env.apiURL is the wrong way to do this, client doesn't have access
-    const msg = await resp.json();
-    if (!msg.success) this.setState({errMsg: msg.message});
-    else this.setState({msg: msg.message});
+    try {
+      // TODO env.apiURL is the wrong way to do this, client doesn't need access to anything but the URL.
+      // Presumably env.json contains secrets that the client doesn't need to know
+      const resp = await sendRequest('POST', env.apiURL, data);
+      const msg = await resp.json();
+      if (!msg.success) this.setState({errMsg: msg.message});
+      else this.setState({msg: msg.message});
+    }
+    catch (e) {
+      if (e.toString() === 'TypeError: Failed to fetch') {
+        this.setState({errMsg: 'Failed to connect to server, try again later'})
+      }
+    }
   }
 
-
+  submitButtonFocus() {
+    const {username, pw1, pw2} = this.state;
+    console.log(`username: ${username} password: ${pw1} password2 ${pw2}`);
+    const isValid = validateCreds(username, pw1 , pw2);
+    if (!isValid.success) {
+      this.setState({errMsg: isValid.message})
+    }
+  }
 
   render() {
+    const {errMsg} = this.state;
+    const error = errMsg ? <div>{errMsg}</div>: null;
     return (
       <div>
         <form>
@@ -63,7 +88,8 @@ export class Registration extends React.Component {
           <input id="pw1" type="password" placeholder="Password" onChange={this.handleChange}/>
           <input id="pw2" type="password" placeholder="Repeat password" onChange={this.handleChange}/>
         </form>
-        <button id="registration-btn" onClick={this.handleSubmit} onFocus={this.validatePw}>Submit</button>
+        <button id="registration-btn" onClick={this.handleSubmit} onFocus={this.submitButtonFocus}>Submit</button>
+        {error}
       </div>
     )
   }

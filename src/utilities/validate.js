@@ -19,5 +19,6 @@ export function validateCreds(username, password, password2) {
     return result;
   }
   result.success = true;
+  result.message = 'potentially valid credentials';
   return result;
 }

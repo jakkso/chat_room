@@ -1,7 +1,7 @@
 import mqtt from 'mqtt';
 import React from 'react';
 
-import Input from "./chatInput/chatInput";
+import Input from "./react-components/chatInput/chatInput";
 import {LoginView} from "./react-components/login/login";
 import {Registration} from "./react-components/registration/registrationView";
 import {MsgWindow} from './react-components/messageWindow/msgWindow';
