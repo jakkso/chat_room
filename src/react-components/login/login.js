@@ -17,7 +17,10 @@ export function LoginView(props) {
         <input type="password" placeholder="Password" onChange={onChange} value={password} id="password" onSubmit={onSubmit}/>
         <input type="text" placeholder="Channel" onChange={onChange} value={channel} id="channel" onSubmit={onSubmit}/>
       </form>
+      <div id="button-container">
         <button id="login-button" onClick={onSubmit} type="submit">Go!</button>
+        {props.children}
+      </div>
     </div>
   )
 }

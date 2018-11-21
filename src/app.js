@@ -3,7 +3,7 @@ import React from 'react';
 
 import Input from "./react-components/chatInput/chatInput";
 import {LoginView} from "./react-components/login/login";
-import {Registration} from "./react-components/registration/registrationView";
+import {Modal} from "./react-components/registration/registrationView";
 import {MsgWindow} from './react-components/messageWindow/msgWindow';
 import {Title} from "./react-components/title/title";
 
@@ -19,6 +19,7 @@ export class Main extends React.Component {
     this.handleTextInput = this.handleTextInput.bind(this);
     this.handleTextSubmit = this.handleTextSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
+    this.toggleModal = this.toggleModal.bind(this);
 
     this.state = {
       username: '',
@@ -28,6 +29,7 @@ export class Main extends React.Component {
       text: '',           // input box's state stored here.
       lastUsername: '',   // Used to group messages in MsgWindow
       messages: [],
+      showRegistration: false,
     };
     this.client = null;
     this.hostname = 'jakk.zapto.org';
@@ -271,6 +273,14 @@ export class Main extends React.Component {
     this.client.end();
   }
 
+  toggleModal() {
+    this.setState((prevState) => {
+      return {
+        showRegistration: !prevState.showRegistration
+      }
+    })
+  }
+
   render() {
     const {username,
            password,
@@ -278,7 +288,8 @@ export class Main extends React.Component {
            lastUsername,
            channel,
            text,
-           isConnected} = this.state;
+           isConnected,
+           showRegistration} = this.state;
     let input;
     let title;
     if (isConnected) {
@@ -289,16 +300,21 @@ export class Main extends React.Component {
         text={text}
         disconnect={this.logout}
       />;
-    } else {
+    }
+    else {
       title = <Title text={"chatRoom"}/>;
-      // input = <LoginView
-      //   onChange={this.onCredChange}
-      //   onSubmit={this.login}
-      //   username={username}
-      //   password={password}
-      //   channel={channel}
-      // />;
-      input = <Registration />
+      input = <div>
+        <LoginView
+          onChange={this.onCredChange}
+          onSubmit={this.login}
+          username={username}
+          password={password}
+          channel={channel}
+        >
+          <button type="button" onClick={this.toggleModal}>Register</button>
+        </LoginView>
+        <Modal handleClose={this.toggleModal} show={showRegistration}/>
+      </div>
     }
     return (
       <div>
@@ -308,6 +324,7 @@ export class Main extends React.Component {
           lastUsername={lastUsername}
         />
         {input}
+
       </div>
     );
   }

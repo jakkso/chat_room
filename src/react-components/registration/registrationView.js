@@ -3,6 +3,7 @@ import React from 'react';
 import {sendRequest} from "../../utilities/sendRequests";
 import {validateCreds} from "../../utilities/validate";
 import env from '../../env'
+import './registrationView.css'
 
 export class Registration extends React.Component {
   constructor(props) {
@@ -28,13 +29,13 @@ export class Registration extends React.Component {
     const credential = event.target.value;
     switch(event.target.id) {
       case 'username':
-        this.setState({username: credential});
+        this.setState({username: credential, errMsg: null});
         break;
       case 'pw1':
-        this.setState({pw1: credential});
+        this.setState({pw1: credential, errMsg: null});
         break;
       case 'pw2':
-        this.setState({pw2: credential});
+        this.setState({pw2: credential, errMsg: null});
         break;
       default:
         break;
@@ -95,19 +96,51 @@ export class Registration extends React.Component {
   }
 
   render() {
-    const {errMsg} = this.state;
-    const error = errMsg ? <div>{errMsg}</div>: null;
+    const {errMsg, msg} = this.state;
+    const error = errMsg ? <div className="error">{errMsg}</div> : null;
+    const success = msg ? <div className="success">{msg}</div> : null;
+    const disableBtn = !!msg;
+    const btnClass = msg ? 'disabled' : null;
     return (
-      <div>
-        <form>
-          <input id="username" type="text" placeholder="Username" onChange={this.handleChange}/>
-          <input id="pw1" type="password" placeholder="Password" onChange={this.handleChange}/>
-          <input id="pw2" type="password" placeholder="Repeat password" onChange={this.handleChange}/>
-        </form>
-        {error}
-        <button id="registration-btn" onClick={this.handleSubmit} onFocus={this.submitButtonFocus}>Submit</button>
+      <div id="register-container">
+        <div id="register-form">
+          <form>
+            <input id="username" type="text" placeholder="Username" onChange={this.handleChange}/>
+            <input id="pw1" type="password" placeholder="Password" onChange={this.handleChange}/>
+            <input id="pw2" type="password" placeholder="Repeat password" onChange={this.handleChange}/>
+          </form>
+          <div>
+            <button
+              id="registration-btn"
+              onClick={this.handleSubmit}
+              onFocus={this.submitButtonFocus}
+              disabled={disableBtn}
+              className={btnClass}
+            >
+              Submit
+            </button>
+            {this.props.children}
+          </div>
+        </div>
+        <div id="cred-rules">
+          {error}
+          {success}
+        </div>
       </div>
     )
   }
 
 }
+
+export const Modal = ({handleClose, show}) => {
+  const showHideClass = show ? "modal display-block" : "modal display-none";
+  return (
+    <div className={showHideClass}>
+      <section className="modal-main">
+        <Registration>
+          <button onClick={handleClose}>Close</button>
+        </Registration>
+      </section>
+    </div>
+  )
+};
