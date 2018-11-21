@@ -25,7 +25,7 @@ export function validateCreds(username, password, password2) {
 
 /**
  * Returns true if whitespace is present in string, false otherwise
- * @param string
+ * @param string {String}
  * @return {boolean}
  */
 function hasWhitespace(string) {
