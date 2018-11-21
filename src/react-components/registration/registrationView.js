@@ -64,7 +64,7 @@ export class Registration extends React.Component {
     }
     catch (e) {
       if (e.toString() === 'TypeError: Failed to fetch') {
-        this.setState({errMsg: 'Failed to connect to server, try again later'})
+        this.setState({errMsg: 'failed to connect to server, try again later'})
       }
     }
   }
