@@ -18,6 +18,7 @@ export class Registration extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.submitButtonFocus = this.submitButtonFocus.bind(this);
+    this.clearState = this.clearState.bind(this);
   }
 
   /**
@@ -77,14 +78,15 @@ export class Registration extends React.Component {
     }
     catch (e) {
       if (e.toString() === 'TypeError: Failed to fetch') {
-        this.setState({errMsg: 'failed to connect to server, try again later.'})
+        this.setState({errMsg: 'connection error, please try again later.'})
       }
     }
   }
 
   /**
    * Called when user focuses on submit button.
-   * Notifies user if their credentials will not validate
+   * Notifies user if their credentials will not validate prior to sending
+   * the request.
    */
   submitButtonFocus() {
     const {username, pw1, pw2} = this.state;
@@ -95,12 +97,36 @@ export class Registration extends React.Component {
     this.setState({errMsg: null})
   }
 
+  /**
+   * Called when the close button is pressed.  Clears the state, so
+   * that the input boxes and messages are cleared and not displayed.
+   * This isn't called in ComponentWillUnmount because it isn't actually
+   * unmounted when the close button is pressed, just not displayed.
+   */
+  clearState() {
+    this.setState({
+      username: '',
+      pw1: '',
+      pw2: '',
+      msg: null,
+      errMsg: null,
+    })
+  }
+
   render() {
     const {errMsg, msg} = this.state;
     const error = errMsg ? <div className="error">{errMsg}</div> : null;
     const success = msg ? <div className="success">{msg}</div> : null;
     const disableBtn = !!msg;
     const btnClass = msg ? 'disabled' : null;
+    if (success) {
+      return (
+        <div>
+          {success}
+          {this.props.children}
+        </div>
+      )
+    }
     return (
       <div id="register-container">
         <div id="register-form">
