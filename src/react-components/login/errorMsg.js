@@ -8,14 +8,18 @@ export function ErrorMessage(props) {
       return (<li key={element}>{element}</li>)
     });
     return (
-      <ul className="err err-list">
-        {errors}
-      </ul>
+      <div id="err-container">
+        <ul className="err err-list">
+          {errors}
+        </ul>
+      </div>
     )
   }
   else if (error.constructor === String) {
     return (
-      <div className="err">{error}</div>
+      <div id="err-container">
+        <div className="err">{error}</div>
+      </div>
     )
   }
 }

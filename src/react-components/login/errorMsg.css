@@ -1,0 +1,14 @@
+#err-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.err {
+  color: darkred;
+  max-width: 33%;
+}
+
+.err li {
+  list-style-type: none;
+}

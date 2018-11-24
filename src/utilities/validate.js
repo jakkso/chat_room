@@ -29,7 +29,6 @@ export function credentials(username, password, password2) {
  */
 export function validChannel(channel) {
   const invalidChars = [' ', '#', '$'];
-  if (!channel) return false;
   if (channel.startsWith('/')) return false;
   for (let i=0; i<invalidChars.length; i++) {
     if (channel.includes(invalidChars[i])) return false;

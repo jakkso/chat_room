@@ -80,7 +80,12 @@ export class Main extends React.Component {
       returnValue = false;
       errMsg.push('Blank Password.');
     }
-    if (!validChannel(channel)) {
+
+    if (!channel) {
+      returnValue = false;
+      errMsg.push('Enter a channel')
+    }
+    else if (!validChannel(channel)) {
       returnValue = false;
       errMsg.push('Channel name must not include any spaces, \'#\', or \'$\' characters.');
     }
