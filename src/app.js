@@ -1,6 +1,7 @@
 import mqtt from 'mqtt';
 import React from 'react';
 
+import {ErrorMessage} from "./react-components/login/errorMsg";
 import Input from "./react-components/chatInput/chatInput";
 import {LoginView} from "./react-components/login/login";
 import {Modal} from "./react-components/registration/registrationView";
@@ -30,6 +31,7 @@ export class Main extends React.Component {
       lastUsername: '',   // Used to group messages in MsgWindow
       messages: [],
       showRegistration: false,
+      errMsg: null,
     };
     this.client = null;
     this.hostname = 'jakk.zapto.org';
@@ -61,19 +63,18 @@ export class Main extends React.Component {
   /**
    * Does basic validation of username, password, and channel,
    * return {bool} true if credentials checkout, false otherwise.
-   *   If credentials aren't valid, the reason they're invalid is added to state.messages
    */
   validateCredentials() {
     let returnValue = true;
-    let msgStr = '';
+    const errMsg = [];
     const {username, password, channel} = this.state;
     if (username.length === 0) {
       returnValue = false;
-      msgStr += 'Invalid username.  ';
+      errMsg.push('Invalid username.');
     }
     if (password.length === 0) {
       returnValue = false;
-      msgStr += 'Invalid Password.  ';
+      errMsg.push('Invalid Password.');
     }
     if (channel.length === 0 ||
       channel.includes(' ') ||
@@ -82,9 +83,9 @@ export class Main extends React.Component {
       channel.startsWith('/')   // Starting a topic with a / means that you're actually creating a channel and a sub
       ) {                       // channel, but the channel is a zero character.  Simpler is better.
       returnValue = false;
-      msgStr += 'Invalid channel.';
+      errMsg.push('Invalid channel.');
     }
-    if (msgStr) this.addMsg(msgStr, true);
+    if (errMsg) this.setState({errMsg});
     return returnValue;
   }
 
@@ -112,7 +113,7 @@ export class Main extends React.Component {
       this.client.subscribe(channel, {qos: 2}, (err) => {
         if (err) {
           this.client.end();
-          this.addMsg('Subscription error', true);
+          this.setState({errMsg: 'Subscription error'})
         }
         else {
           this.setState({isConnected: true});
@@ -138,16 +139,14 @@ export class Main extends React.Component {
     });
 
     this.client.on('error', (err) => {
-      console.log(err);
+      this.client.end();
+      console.error(err);
       const errMsg = err.message;
       switch (errMsg) {
         case "Connection refused: Not authorized":
-          this.client.end();
-          this.addMsg(errMsg, true);
-          this.setState({isConnected: false,});
+          this.setState({isConnected: false, errMsg: errMsg});
           break;
         default:
-          this.client.end();
           this.addMsg(errMsg, true);
           break;
       }
@@ -259,11 +258,11 @@ export class Main extends React.Component {
   /**
    * Used to scroll to the bottom of the list of messages upon updating.
    * This could be replaced by converting MsgWindow to a stateful component and
-   * using refs, but this is simpler and easier to understand.
+   * using refs, but this is simpler and easier to do.
    */
   componentDidUpdate() {
     const endOfMsgs = document.getElementById('messages-end');
-    endOfMsgs.scrollIntoView({behavior: 'smooth'});
+    if (endOfMsgs) endOfMsgs.scrollIntoView({behavior: 'smooth'});
   }
 
   /**
@@ -272,6 +271,7 @@ export class Main extends React.Component {
   componentWillUnmount() {
     this.client.end();
   }
+
 
   toggleModal() {
     this.setState((prevState) => {
@@ -289,17 +289,26 @@ export class Main extends React.Component {
            channel,
            text,
            isConnected,
-           showRegistration} = this.state;
+           showRegistration,
+           errMsg} = this.state;
+    const err = errMsg ? <ErrorMessage error={errMsg}/> : null;
     let input;
     let title;
+
     if (isConnected) {
       title = <Title text={channel}/>;
-      input = <Input
-        onChange={this.handleTextInput}
-        onSubmit={this.handleTextSubmit}
-        text={text}
-        disconnect={this.logout}
-      />;
+      input = <div>
+        <MsgWindow
+          messages={messages}
+          lastUsername={lastUsername}
+        />
+        <Input
+          onChange={this.handleTextInput}
+          onSubmit={this.handleTextSubmit}
+          text={text}
+          disconnect={this.logout}
+        />
+      </div>
     }
     else {
       title = <Title text={"chatRoom"}/>;
@@ -319,12 +328,8 @@ export class Main extends React.Component {
     return (
       <div>
         {title}
-        <MsgWindow
-          messages={messages}
-          lastUsername={lastUsername}
-        />
         {input}
-
+        {err}
       </div>
     );
   }
