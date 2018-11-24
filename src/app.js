@@ -134,7 +134,7 @@ export class Main extends React.Component {
 
     this.client.on('message', (channel, message) => {
       try {
-        this.addMsg(JSON.parse(message.toString())); // message is a buffer and must be cast to string
+        this.addMsg(JSON.parse(message.toString()), false); // message is a buffer and must be cast to string
       }
       catch (err) {
         console.error(`JSON parse error for message: ${message}`);
@@ -246,7 +246,7 @@ export class Main extends React.Component {
         messageId: ''};
       this.client.publish(channel, JSON.stringify(msg));
     } else {
-      this.addMsg('Not connected to server', true); // TODO disable chatbox if not connected
+      this.setState({errMsg: 'Not connected to server'}); // This probably will never be called.
     }
   }
 
