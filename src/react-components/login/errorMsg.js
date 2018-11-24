@@ -5,7 +5,7 @@ export function ErrorMessage(props) {
   const {error} = props;
   if (error.constructor === Array) {
     const errors = error.map((element) => {
-      return (<li>{element}</li>)
+      return (<li key={element}>{element}</li>)
     });
     return (
       <ul className="err err-list">

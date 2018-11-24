@@ -2,7 +2,7 @@ import bodyParser from 'body-parser';
 import express from 'express';
 
 import {Database} from "../database/database";
-import {validateCreds} from "../utilities/validate";
+import {credentials} from "../utilities/validate";
 import env from './../env.json';
 
 export async function API() {
@@ -30,7 +30,7 @@ export async function API() {
     const username = req.body.username;
     const password = req.body.password;
     const password2 = req.body.password2;
-    const isValid = validateCreds(username, password, password2);
+    const isValid = credentials(username, password, password2);
     if (!isValid.success) {
       return res.status(400).send(isValid);
     }

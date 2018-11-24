@@ -1,11 +1,11 @@
 import React from 'react';
 
 import {sendRequest} from "../../utilities/sendRequests";
-import {validateCreds} from "../../utilities/validate";
+import {credentials} from "../../utilities/validate";
 import env from '../../env'
 import './registrationView.css'
 
-export class Registration extends React.Component {
+class Registration extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,7 +52,7 @@ export class Registration extends React.Component {
   async handleSubmit(event) {
     event.preventDefault();
     const {username, pw1, pw2} = this.state;
-    const isValid = validateCreds(username, pw1, pw2);
+    const isValid = credentials(username, pw1, pw2);
 
     // Do credential validation prior to sending fetch request.
     // Server does the same check, to prevent sneaky clients from being sneaky
@@ -90,7 +90,7 @@ export class Registration extends React.Component {
    */
   submitButtonFocus() {
     const {username, pw1, pw2} = this.state;
-    const isValid = validateCreds(username, pw1 , pw2);
+    const isValid = credentials(username, pw1 , pw2);
     if (!isValid.success) {
       this.setState({errMsg: isValid.message})
     }
@@ -158,7 +158,7 @@ export class Registration extends React.Component {
 
 }
 
-export const Modal = ({handleClose, show}) => {
+export const RegistrationModal = ({handleClose, show}) => {
   const showHideClass = show ? "modal display-block" : "modal display-none";
   return (
     <div className={showHideClass}>

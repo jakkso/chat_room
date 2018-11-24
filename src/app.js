@@ -1,11 +1,13 @@
 import mqtt from 'mqtt';
 import React from 'react';
 
+import {validChannel} from "./utilities/validate";
 import {ErrorMessage} from "./react-components/login/errorMsg";
 import Input from "./react-components/chatInput/chatInput";
 import {LoginView} from "./react-components/login/login";
-import {Modal} from "./react-components/registration/registrationView";
+import {RegistrationModal} from "./react-components/registration/registrationView";
 import {MsgWindow} from './react-components/messageWindow/msgWindow';
+import {timestamp} from "./utilities/timestamp";
 import {Title} from "./react-components/title/title";
 
 
@@ -13,12 +15,11 @@ export class Main extends React.Component {
   constructor(props) {
     super(props);
     // Bind instance methods
-    this.onCredChange = this.onCredChange.bind(this);
+    this.onTextChange = this.onTextChange.bind(this);
     this.validateCredentials = this.validateCredentials.bind(this);
     this.login = this.login.bind(this);
     this.logout = this.logout.bind(this);
-    this.handleTextInput = this.handleTextInput.bind(this);
-    this.handleTextSubmit = this.handleTextSubmit.bind(this);
+    this.chatInputSubmit = this.chatInputSubmit.bind(this);
     this.addMsg = this.addMsg.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
 
@@ -39,10 +40,10 @@ export class Main extends React.Component {
   }
 
   /**
-   * Stores credentials and channel in state
+   * Adds form input to state
    * @param event
    */
-  onCredChange(event) {
+  onTextChange(event) {
     const value = event.target.value;
     const elementID = event.target.id;
     switch (elementID) {
@@ -55,35 +56,33 @@ export class Main extends React.Component {
       case "channel":
         this.setState({channel: value,});
         break;
+      case "input-box":
+        this.setState({text: value,});
+        break;
       default:
         break;
     }
   }
 
   /**
-   * Does basic validation of username, password, and channel,
+   * Does basic validation of username, password, and validChannel,
    * return {bool} true if credentials checkout, false otherwise.
    */
   validateCredentials() {
     let returnValue = true;
     const errMsg = [];
     const {username, password, channel} = this.state;
-    if (username.length === 0) {
+    if (!username) {
       returnValue = false;
-      errMsg.push('Invalid username.');
+      errMsg.push('Blank username.');
     }
-    if (password.length === 0) {
+    if (!password) {
       returnValue = false;
-      errMsg.push('Invalid Password.');
+      errMsg.push('Blank Password.');
     }
-    if (channel.length === 0 ||
-      channel.includes(' ') ||
-      channel.includes('#') ||  // # is a wildcard to subscribe all topics (What I'm called channels)
-      channel.includes('$') ||  // $ is used by the broker for internal statistics
-      channel.startsWith('/')   // Starting a topic with a / means that you're actually creating a channel and a sub
-      ) {                       // channel, but the channel is a zero character.  Simpler is better.
+    if (!validChannel(channel)) {
       returnValue = false;
-      errMsg.push('Invalid channel.');
+      errMsg.push('Channel name must not include any spaces, \'#\', or \'$\' characters.');
     }
     if (errMsg) this.setState({errMsg});
     return returnValue;
@@ -164,8 +163,8 @@ export class Main extends React.Component {
    * @param event
    */
   logout(event) {
-    const {username, channel} = this.state;
     event.preventDefault();
+    const {username, channel} = this.state;
     const leaveMsg = {
       username: '',
       timestamp: timestamp(),
@@ -226,23 +225,14 @@ export class Main extends React.Component {
   }
 
   /**
-   * Keeps track of text box's input, called when the text input box is used.
+   * This is called when the chat input box is submitted.
    * @param event
    */
-  handleTextInput(event) {
-    this.setState({text: event.target.value});
-  }
-
-  /**
-   * This is called when the text input box is submitted.  Validates text input
-   * builds then publishes text.
-   * @param event
-   */
-  handleTextSubmit(event) {
+  chatInputSubmit(event) {
     event.preventDefault();
     const {text, channel, username} = this.state;
     this.setState({text: ''});
-    if (text.length === 0 || text.trim().length === 0) return;
+    if (text.trim().length === 0) return;
     if (this.client) {
       const msg = {
         username: username,
@@ -251,7 +241,7 @@ export class Main extends React.Component {
         messageId: ''};
       this.client.publish(channel, JSON.stringify(msg));
     } else {
-      this.addMsg('Not connected to server', true);
+      this.addMsg('Not connected to server', true); // TODO disable chatbox if not connected
     }
   }
 
@@ -303,8 +293,8 @@ export class Main extends React.Component {
           lastUsername={lastUsername}
         />
         <Input
-          onChange={this.handleTextInput}
-          onSubmit={this.handleTextSubmit}
+          onChange={this.onTextChange}
+          onSubmit={this.chatInputSubmit}
           text={text}
           disconnect={this.logout}
         />
@@ -314,7 +304,7 @@ export class Main extends React.Component {
       title = <Title text={"chatRoom"}/>;
       input = <div>
         <LoginView
-          onChange={this.onCredChange}
+          onChange={this.onTextChange}
           onSubmit={this.login}
           username={username}
           password={password}
@@ -322,7 +312,7 @@ export class Main extends React.Component {
         >
           <button type="button" onClick={this.toggleModal}>Register</button>
         </LoginView>
-        <Modal handleClose={this.toggleModal} show={showRegistration}/>
+        <RegistrationModal handleClose={this.toggleModal} show={showRegistration}/>
       </div>
     }
     return (
@@ -333,13 +323,4 @@ export class Main extends React.Component {
       </div>
     );
   }
-
-}
-
-/**
- * Returns timestamp of current time when called
- * @return {number}
- */
-function timestamp() {
-  return Math.round((new Date()).getTime())
 }

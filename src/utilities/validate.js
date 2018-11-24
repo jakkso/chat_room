@@ -4,7 +4,7 @@
  * @param password2 {String}
  * @return {{success: boolean, message: string}}
  */
-export function validateCreds(username, password, password2) {
+export function credentials(username, password, password2) {
   const result = {success: false, message: ''};
   if (username.length < 4) {
     result.message = 'usernames must have at least 4 characters.';
@@ -19,8 +19,22 @@ export function validateCreds(username, password, password2) {
     return result;
   }
   result.success = true;
-  result.message = 'potentially valid credentials';
   return result;
+}
+
+/**
+ * Validates mqtt validChannel name
+ * @param channel {String}
+ * @return {boolean}
+ */
+export function validChannel(channel) {
+  const invalidChars = [' ', '#', '$'];
+  if (!channel) return false;
+  if (channel.startsWith('/')) return false;
+  for (let i=0; i<invalidChars.length; i++) {
+    if (channel.includes(invalidChars[i])) return false;
+  }
+  return true;
 }
 
 /**
